@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary & Log files
+*.log
+scratch/
+tmp/
+temp/
+
+# Large raw archive and NLTK downloads (can be re-downloaded via scripts)
+nltk_data/
+dataset/raw/bbc-fulltext.zip
+dataset/raw/bbc/
+dataset/raw/huffpost_news_raw.csv
+
+# Keep processed and models
+!dataset/processed/
+!dataset/processed/news_dataset_cleaned.csv
+!dataset/processed/external_unseen_news.csv
+!models/

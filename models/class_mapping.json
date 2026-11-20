@@ -1,0 +1,23 @@
+{
+  "categories": [
+    "Politics",
+    "Business",
+    "Technology",
+    "Sports",
+    "Entertainment"
+  ],
+  "cat_to_idx": {
+    "Politics": 0,
+    "Business": 1,
+    "Technology": 2,
+    "Sports": 3,
+    "Entertainment": 4
+  },
+  "idx_to_cat": {
+    "0": "Politics",
+    "1": "Business",
+    "2": "Technology",
+    "3": "Sports",
+    "4": "Entertainment"
+  }
+}

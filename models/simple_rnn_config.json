@@ -1,0 +1,30 @@
+{
+  "model_type": "Word2Vec + Simple RNN",
+  "architecture": {
+    "embedding_layer": "Pretrained Word2Vec Skip-gram 100-D",
+    "trainable_embeddings": false,
+    "recurrent_layer": "SimpleRNN(units=64, activation=tanh, dropout=0.2)",
+    "dense_layer": "Dense(32, activation=relu)",
+    "output_layer": "Dense(5, activation=softmax)"
+  },
+  "training_params": {
+    "batch_size": 64,
+    "max_epochs": 15,
+    "early_stopping_patience": 4,
+    "optimizer": "Adam (lr=0.001)"
+  },
+  "evaluation_metrics": {
+    "accuracy": 0.37161789066813916,
+    "macro_precision": 0.5377280289536482,
+    "macro_recall": 0.38135616619141566,
+    "macro_f1": 0.2827743621818385,
+    "weighted_f1": 0.2785066501132475
+  },
+  "per_class_f1": {
+    "Politics": 0.12090680100755667,
+    "Business": 0.1291866028708134,
+    "Technology": 0.44776119402985076,
+    "Sports": 0.18097447795823665,
+    "Entertainment": 0.535042735042735
+  }
+}

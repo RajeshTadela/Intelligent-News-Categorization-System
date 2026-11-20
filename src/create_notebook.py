@@ -1,0 +1,348 @@
+"""
+Generates the reproducible Google Colab Jupyter Notebook: notebooks/01_dataset_exploration.ipynb
+"""
+import json
+import os
+
+notebook = {
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "# Intelligent News Categorization System\n",
+                "## Phase 1: Project Setup, Dataset Exploration & Integration\n",
+                "\n",
+                "### Objective\n",
+                "Build a unified, robust, 5-class news dataset to classify headlines and full articles into:\n",
+                "1. **Politics**\n",
+                "2. **Business**\n",
+                "3. **Technology**\n",
+                "4. **Sports**\n",
+                "5. **Entertainment**\n",
+                "\n",
+                "### Key Constraints & Rules\n",
+                "- **No Transformers / LLMs**: Only classical ML (Logistic Regression, SVM) and Deep Learning (RNN, LSTM) in future phases.\n",
+                "- **No Data Leakage**: Do not use test splits for fitting vectorizers or vocabularies.\n",
+                "- **Verified Public Datasets**: BBC News Full-Text (Greene & Cunningham 2006) + HuffPost News Category Dataset (Misra 2022).\n",
+                "- **Strict Category Mapping**: General world news is strictly excluded to prevent mislabeling as Politics."
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 1: Colab Environment Setup & Dependencies\n",
+                "Install necessary libraries and configure directories."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Install dependencies (datasets library for quick raw data fetching)\n",
+                "!pip install -q pandas numpy scikit-learn matplotlib seaborn datasets\n",
+                "\n",
+                "import os\n",
+                "import re\n",
+                "import zipfile\n",
+                "import urllib.request\n",
+                "import pandas as pd\n",
+                "import numpy as np\n",
+                "import matplotlib.pyplot as plt\n",
+                "import seaborn as sns\n",
+                "\n",
+                "# Optional Google Drive mount\n",
+                "try:\n",
+                "    from google.colab import drive\n",
+                "    # Uncomment below if you want to persist data to your Drive:\n",
+                "    # drive.mount('/content/drive')\n",
+                "    print('Google Colab environment detected.')\n",
+                "except ImportError:\n",
+                "    print('Local or standard Python environment detected.')\n",
+                "\n",
+                "# Create directories\n",
+                "os.makedirs('dataset/raw', exist_ok=True)\n",
+                "os.makedirs('dataset/processed', exist_ok=True)\n",
+                "os.makedirs('evaluation', exist_ok=True)\n",
+                "print('Project directories initialized.')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 2: Source 1 - BBC News Classification Dataset\n",
+                "- **Origin**: Derek Greene & Padraig Cunningham, ICML 2006 (UCD Insight Centre).\n",
+                "- **Content**: 2,225 full-text articles across 5 classes: business, entertainment, politics, sport, tech.\n",
+                "- **License**: Non-commercial academic research use."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "bbc_url = 'http://mlg.ucd.ie/files/datasets/bbc-fulltext.zip'\n",
+                "bbc_zip = 'dataset/raw/bbc-fulltext.zip'\n",
+                "\n",
+                "if not os.path.exists(bbc_zip):\n",
+                "    print('Downloading BBC News dataset from UCD...')\n",
+                "    headers = {'User-Agent': 'Mozilla/5.0'}\n",
+                "    req = urllib.request.Request(bbc_url, headers=headers)\n",
+                "    with urllib.request.urlopen(req) as resp, open(bbc_zip, 'wb') as f:\n",
+                "        f.write(resp.read())\n",
+                "    print('Download complete.')\n",
+                "\n",
+                "# Extract\n",
+                "with zipfile.ZipFile(bbc_zip, 'r') as zip_ref:\n",
+                "    zip_ref.extractall('dataset/raw')\n",
+                "\n",
+                "bbc_map = {\n",
+                "    'business': 'Business',\n",
+                "    'entertainment': 'Entertainment',\n",
+                "    'politics': 'Politics',\n",
+                "    'sport': 'Sports',\n",
+                "    'tech': 'Technology'\n",
+                "}\n",
+                "\n",
+                "records_bbc = []\n",
+                "base_path = 'dataset/raw/bbc'\n",
+                "for folder, cat_name in bbc_map.items():\n",
+                "    folder_p = os.path.join(base_path, folder)\n",
+                "    if os.path.isdir(folder_p):\n",
+                "        for fname in sorted(os.listdir(folder_p)):\n",
+                "            if fname.endswith('.txt'):\n",
+                "                with open(os.path.join(folder_p, fname), 'r', encoding='latin-1') as f:\n",
+                "                    txt = f.read().strip()\n",
+                "                    if txt:\n",
+                "                        records_bbc.append({\n",
+                "                            'text': txt,\n",
+                "                            'category': cat_name,\n",
+                "                            'source': 'BBC News',\n",
+                "                            'text_type': 'full_article'\n",
+                "                        })\n",
+                "\n",
+                "df_bbc = pd.DataFrame(records_bbc)\n",
+                "print(f'BBC News loaded: {len(df_bbc)} articles.')\n",
+                "print(df_bbc['category'].value_counts())"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 3: Source 2 - HuffPost News Category Dataset\n",
+                "- **Author**: Rishabh Misra (arXiv:2205.10512, 2022).\n",
+                "- **License**: CC BY 4.0.\n",
+                "- **Content**: Headline and short summaries.\n",
+                "- **Mapping**: POLITICS -> Politics, BUSINESS -> Business, TECH -> Technology, SPORTS -> Sports, ENTERTAINMENT -> Entertainment.\n",
+                "- **Explicit Exclusion**: WORLD NEWS and other categories are strictly dropped."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "from datasets import load_dataset\n",
+                "\n",
+                "print('Loading HuffPost dataset from hub...')\n",
+                "ds_huff = load_dataset('heegyu/news-category-dataset', split='train')\n",
+                "\n",
+                "huff_map = {\n",
+                "    'POLITICS': 'Politics',\n",
+                "    'BUSINESS': 'Business',\n",
+                "    'TECH': 'Technology',\n",
+                "    'SPORTS': 'Sports',\n",
+                "    'ENTERTAINMENT': 'Entertainment'\n",
+                "}\n",
+                "\n",
+                "records_huff = []\n",
+                "for row in ds_huff:\n",
+                "    cat = row.get('category', '')\n",
+                "    if cat in huff_map:\n",
+                "        headline = (row.get('headline') or '').strip()\n",
+                "        desc = (row.get('short_description') or '').strip()\n",
+                "        if headline and desc:\n",
+                "            txt = f'{headline} - {desc}'\n",
+                "        elif headline:\n",
+                "            txt = headline\n",
+                "        elif desc:\n",
+                "            txt = desc\n",
+                "        else:\n",
+                "            continue\n",
+                "        records_huff.append({\n",
+                "            'text': txt,\n",
+                "            'category': huff_map[cat],\n",
+                "            'source': 'HuffPost',\n",
+                "            'text_type': 'headline_summary'\n",
+                "        })\n",
+                "\n",
+                "df_huff = pd.DataFrame(records_huff)\n",
+                "print(f'Total matching HuffPost records: {len(df_huff)}')\n",
+                "print(df_huff['category'].value_counts())\n",
+                "\n",
+                "# Stratified sample 2,000 per class to keep classes balanced\n",
+                "balanced_huff = df_huff.groupby('category', group_keys=False).apply(\n",
+                "    lambda g: g.sample(n=min(2000, len(g)), random_state=42)\n",
+                ").reset_index(drop=True)\n",
+                "print(f'Balanced HuffPost sample: {len(balanced_huff)} records.')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 4: Integration, Cleaning, and Deduplication\n",
+                "Concatenate datasets, clean whitespaces, eliminate missing values, and remove exact and near-duplicates."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "# Merge\n",
+                "df_unified = pd.concat([df_bbc, balanced_huff], ignore_index=True)\n",
+                "initial_count = len(df_unified)\n",
+                "\n",
+                "# Normalize whitespaces and clean text\n",
+                "df_unified['text'] = df_unified['text'].astype(str).str.replace(r'\\s+', ' ', regex=True).str.strip()\n",
+                "df_unified = df_unified[df_unified['text'].str.len() > 15].copy()\n",
+                "\n",
+                "# Exact deduplication\n",
+                "df_unified = df_unified.drop_duplicates(subset=['text']).reset_index(drop=True)\n",
+                "exact_dupes = initial_count - len(df_unified)\n",
+                "\n",
+                "# Near-deduplication (case-insensitive alphanumeric normalization)\n",
+                "norm_series = df_unified['text'].str.lower().str.replace(r'[^a-z0-9 ]', '', regex=True)\n",
+                "near_dupes = norm_series.duplicated().sum()\n",
+                "df_unified = df_unified[~norm_series.duplicated()].reset_index(drop=True)\n",
+                "\n",
+                "# Compute text length statistics\n",
+                "df_unified['word_count'] = df_unified['text'].apply(lambda x: len(x.split()))\n",
+                "df_unified['char_count'] = df_unified['text'].apply(len)\n",
+                "\n",
+                "print(f'Initial rows: {initial_count}')\n",
+                "print(f'Exact duplicates removed: {exact_dupes}')\n",
+                "print(f'Near duplicates removed: {near_dupes}')\n",
+                "print(f'Cleaned dataset total rows: {len(df_unified)}')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 5: Dataset Analysis & Visualizations\n",
+                "Evaluate class distributions and text length characteristics."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "categories = ['Politics', 'Business', 'Technology', 'Sports', 'Entertainment']\n",
+                "\n",
+                "# 1. Class Distribution\n",
+                "plt.figure(figsize=(14, 5))\n",
+                "plt.subplot(1, 2, 1)\n",
+                "ax = sns.countplot(data=df_unified, x='category', order=categories, palette='viridis')\n",
+                "plt.title('Overall Class Distribution', fontsize=12, fontweight='bold')\n",
+                "plt.xlabel('Category')\n",
+                "plt.ylabel('Articles')\n",
+                "for p in ax.patches:\n",
+                "    ax.annotate(f'{int(p.get_height())}', (p.get_x() + p.get_width() / 2., p.get_height()),\n",
+                "                ha='center', va='center', xytext=(0, 5), textcoords='offset points')\n",
+                "\n",
+                "plt.subplot(1, 2, 2)\n",
+                "sns.countplot(data=df_unified, x='category', hue='source', order=categories, palette='Set2')\n",
+                "plt.title('Distribution by Source', fontsize=12, fontweight='bold')\n",
+                "plt.xlabel('Category')\n",
+                "plt.ylabel('Articles')\n",
+                "plt.tight_layout()\n",
+                "plt.savefig('evaluation/class_distribution.png', dpi=300)\n",
+                "plt.show()\n",
+                "\n",
+                "# 2. Text Length Distribution\n",
+                "plt.figure(figsize=(14, 5))\n",
+                "plt.subplot(1, 2, 1)\n",
+                "sns.histplot(data=df_unified[df_unified['word_count'] < 1000], x='word_count', hue='source', kde=True, bins=35)\n",
+                "plt.title('Word Count Distribution (Truncated at 1000 words)', fontsize=12, fontweight='bold')\n",
+                "\n",
+                "plt.subplot(1, 2, 2)\n",
+                "sns.boxplot(data=df_unified, x='category', y='word_count', showfliers=False, order=categories, palette='pastel')\n",
+                "plt.title('Word Count Across Categories', fontsize=12, fontweight='bold')\n",
+                "plt.tight_layout()\n",
+                "plt.savefig('evaluation/text_length_distribution.png', dpi=300)\n",
+                "plt.show()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 6: Sample Articles from Every Category\n",
+                "Verify text quality and topical authenticity across classes."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "for cat in categories:\n",
+                "    print('=' * 80)\n",
+                "    print(f'CATEGORY: {cat.upper()}')\n",
+                "    samples = df_unified[df_unified['category'] == cat].sample(2, random_state=42)\n",
+                "    for idx, (_, row) in enumerate(samples.iterrows(), 1):\n",
+                "        snippet = row['text'][:220] + ('...' if len(row['text']) > 220 else '')\n",
+                "        print(f'  Sample {idx} [{row[\"source\"]}] ({row[\"word_count\"]} words):')\n",
+                "        print(f'    \"{snippet}\"\\n')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "metadata": {},
+            "source": [
+                "### Step 7: Export Unified Cleaned CSV\n",
+                "Save `news_dataset_cleaned.csv` to `dataset/processed/`."
+            ]
+        },
+        {
+            "cell_type": "code",
+            "execution_count": None,
+            "metadata": {},
+            "outputs": [],
+            "source": [
+                "out_path = 'dataset/processed/news_dataset_cleaned.csv'\n",
+                "cols = ['text', 'category', 'source', 'text_type', 'word_count', 'char_count']\n",
+                "df_unified[cols].to_csv(out_path, index=False)\n",
+                "print(f'Successfully exported clean dataset to: {out_path}')\n",
+                "print(f'Dataset shape: {df_unified.shape}')"
+            ]
+        }
+    ],
+    "metadata": {
+        "colab": {"name": "01_dataset_exploration.ipynb"},
+        "kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
+        "language_info": {"name": "python", "version": "3.10"}
+    },
+    "nbformat": 4,
+    "nbformat_minor": 2
+}
+
+os.makedirs("notebooks", exist_ok=True)
+notebook_path = "notebooks/01_dataset_exploration.ipynb"
+with open(notebook_path, "w", encoding="utf-8") as f:
+    json.dump(notebook, f, indent=2)
+
+print(f"Colab notebook created at {notebook_path}")

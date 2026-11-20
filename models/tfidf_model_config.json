@@ -1,0 +1,30 @@
+{
+  "model_type": "TF-IDF + Classical ML",
+  "categories": [
+    "Politics",
+    "Business",
+    "Technology",
+    "Sports",
+    "Entertainment"
+  ],
+  "tfidf_parameters": {
+    "ngram_range": [
+      1,
+      2
+    ],
+    "max_features": 20000,
+    "min_df": 2,
+    "max_df": 0.85,
+    "sublinear_tf": true
+  },
+  "logistic_regression_parameters": {
+    "C": 1.0,
+    "max_iter": 1000,
+    "solver": "lbfgs"
+  },
+  "linear_svm_parameters": {
+    "C": 0.5,
+    "max_iter": 2000,
+    "calibration": "sigmoid (CalibratedClassifierCV)"
+  }
+}

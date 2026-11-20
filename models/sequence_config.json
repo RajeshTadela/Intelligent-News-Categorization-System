@@ -1,0 +1,12 @@
+{
+  "vocab_size": 17411,
+  "embedding_dim": 100,
+  "max_seq_len": 150,
+  "pad_token": "<PAD>",
+  "pad_index": 0,
+  "oov_token": "<OOV>",
+  "oov_index": 1,
+  "padding": "post",
+  "truncating": "post",
+  "word2vec_architecture": "Skip-gram (sg=1, window=5, epochs=15)"
+}

@@ -1,0 +1,45 @@
+{
+  "model_type": "Word2Vec + LSTM",
+  "architecture": {
+    "embedding_layer": "Pretrained Word2Vec Skip-gram 100-D",
+    "trainable_embeddings": true,
+    "recurrent_layer": "LSTM(units=128, dropout=0.2)",
+    "dense_layer": "Dense(32, activation=relu)",
+    "dropout_rate": 0.4,
+    "output_layer": "Dense(5, activation=softmax)"
+  },
+  "training_params": {
+    "batch_size": 64,
+    "max_epochs": 15,
+    "early_stopping_patience": 4,
+    "optimizer": "Adam (lr=0.001)"
+  },
+  "validation_experiments": {
+    "lstm_64_frozen": {
+      "val_acc": 0.34787410497665405,
+      "val_loss": 1.3971842527389526
+    },
+    "lstm_128_frozen": {
+      "val_acc": 0.37272223830223083,
+      "val_loss": 1.3434780836105347
+    },
+    "lstm_finetuned": {
+      "val_acc": 0.416344553232193,
+      "val_loss": 1.2845722436904907
+    }
+  },
+  "evaluation_metrics": {
+    "accuracy": 0.4080618442849255,
+    "macro_precision": 0.7081504973726963,
+    "macro_recall": 0.4119233812768619,
+    "macro_f1": 0.3365985125477967,
+    "weighted_f1": 0.33489895834804884
+  },
+  "per_class_f1": {
+    "Politics": 0.6130030959752322,
+    "Business": 0.16176470588235295,
+    "Technology": 0.24019607843137256,
+    "Sports": 0.22641509433962265,
+    "Entertainment": 0.4416135881104034
+  }
+}
