@@ -42,16 +42,6 @@ The **Intelligent News Categorization System** is a production-ready Natural Lan
 | **Entertainment** | 🎬 | Cinema box office, music industry, performing arts, film festivals | `Orange (#f39c12)` |
 
 </div>
-
-### 🛡️ Strict Technological Constraints & Methodological Rigor
-- **100% Classical NLP & Foundational Neural Networks:** Uses Scikit-learn, NLTK, Gensim Word2Vec, and TensorFlow/Keras.
-- **Zero Generative / Transformer Models:** **Strictly NO** BERT, GPT, Hugging Face transformers, or external LLM APIs.
-- **Zero Data Leakage:** All vectorizers, vocabularies, embeddings, and hyperparameters were learned **exclusively on the 70% training split**. Validation (15%) and Test (15%) splits were strictly held out.
-- **Calibrated Uncertainty Mechanism:** Integrated Platt scaling (`CalibratedClassifierCV`) and a validation-tuned rejection threshold ($T = 0.50$) to reject ambiguous, mixed-topic statements with:  
-  `"Unable to confidently classify this article."`
-
----
-
 ## 🧠 System Architecture
 
 ```text
