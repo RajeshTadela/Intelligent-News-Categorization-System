@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent News Categorization System - Engineering Report</title>
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --secondary: #3B82F6;
+            --politics: #e74c3c;
+            --business: #3498db;
+            --technology: #9b59b6;
+            --sports: #2ecc71;
+            --entertainment: #f39c12;
+            --bg-light: #F8FAFC;
+            --text-dark: #0F172A;
+            --border: #E2E8F0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #FFFFFF;
+            margin: 0;
+            padding: 40px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: var(--primary);
+            font-size: 28px;
+            margin: 0 0 10px 0;
+        }
+        h2 {
+            color: var(--primary);
+            font-size: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+            margin-top: 35px;
+        }
+        h3 {
+            color: #334155;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .meta-box {
+            background-color: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0 25px 0;
+            font-size: 14px;
+        }
+        .badges {
+            margin: 10px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        .badge-politics { background-color: var(--politics); }
+        .badge-business { background-color: var(--business); }
+        .badge-technology { background-color: var(--technology); }
+        .badge-sports { background-color: var(--sports); }
+        .badge-entertainment { background-color: var(--entertainment); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--bg-light);
+            color: #334155;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #FAFAFA;
+        }
+        .highlight-row {
+            background-color: #EFF6FF !important;
+            font-weight: 600;
+        }
+        pre {
+            background-color: #0F172A;
+            color: #F8FAFC;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 12px;
+        }
+        code {
+            background-color: #F1F5F9;
+            color: #D946EF;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13px;
+        }
+        .print-btn {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .print-btn:hover {
+            background-color: var(--secondary);
+        }
+        @media print {
+            .print-btn { display: none; }
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="print-btn" onclick="window.print()">🖨️ Print to PDF / Save Document</button>
+        
+        <header>
+            <h1>Intelligent News Categorization System</h1>
+            <div style="font-size: 15px; color: #475569;">Comprehensive Engineering & Experimental Research Report</div>
+            <div style="margin-top: 10px; font-size: 13px; color: #64748B;">
+                <b>Author:</b> Rajesh Tadela &nbsp;|&nbsp; 
+                <b>Repository:</b> <a href="https://github.com/RajeshTadela/Intelligent-News-Categorization-System" target="_blank">RajeshTadela/Intelligent-News-Categorization-System</a> &nbsp;|&nbsp; 
+                <b>Date:</b> November 2024
+            </div>
+        </header>
+
+        <div class="meta-box">
+            <b>Core Project Scope:</b> Five-class natural language text categorization using classical NLP (TF-IDF, Linear SVM, Logistic Regression) and neural networks (Word2Vec Skip-gram, Simple RNN, LSTM).<br>
+            <b>Strict Constraint:</b> 100% compliant with traditional NLP. <b>Zero reliance on Transformers, BERT, GPT, or external LLM APIs.</b>
+        </div>
+
+        <div class="badges">
+            <span class="badge badge-politics">🏛️ Politics</span>
+            <span class="badge badge-business">📈 Business</span>
+            <span class="badge badge-technology">💻 Technology</span>
+            <span class="badge badge-sports">⚽ Sports</span>
+            <span class="badge badge-entertainment">🎬 Entertainment</span>
+        </div>
+
+        <h2>1. Executive Summary & Benchmark Results</h2>
+        <p>Across eight development phases, four distinct machine learning architectures were trained on identical stratified splits (70% Train, 15% Validation, 15% Test) with strict zero-leakage safeguards:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Model Architecture</th>
+                    <th>Test Accuracy</th>
+                    <th>Macro F1</th>
+                    <th>Macro Precision</th>
+                    <th>Inference Latency</th>
+                    <th>Model Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td>🥇 1</td>
+                    <td><b>TF-IDF + Linear SVM (Calibrated)</b></td>
+                    <td><b>83.77%</b></td>
+                    <td><b>0.8376</b></td>
+                    <td><b>83.89%</b></td>
+                    <td><b>0.01 ms</b></td>
+                    <td><b>0.76 MB</b></td>
+                </tr>
+                <tr>
+                    <td>🥈 2</td>
+                    <td>TF-IDF + Logistic Regression</td>
+                    <td>83.49%</td>
+                    <td>0.8351</td>
+                    <td>83.67%</td>
+                    <td>0.00 ms</td>
+                    <td>0.76 MB</td>
+                </tr>
+                <tr>
+                    <td>🥉 3</td>
+                    <td>Word2Vec + LSTM</td>
+                    <td>40.81%</td>
+                    <td>0.3366</td>
+                    <td>70.82%</td>
+                    <td>0.92 ms</td>
+                    <td>21.35 MB</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Word2Vec + Simple RNN</td>
+                    <td>37.16%</td>
+                    <td>0.2828</td>
+                    <td>53.77%</td>
+                    <td>0.49 ms</td>
+                    <td>6.82 MB</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>2. Why Linear Models Outperformed Neural Networks</h2>
+        <ol>
+            <li><b>High-Dimensional Linear Separability:</b> A 20,000-dimensional TF-IDF unigram+bigram feature space provides linearly separable boundaries for thematic news corpora. Linear SVM identifies the maximum-margin hyperplane without temporal decay.</li>
+            <li><b>The Vanishing Gradient Problem in Simple RNN:</b> Over sequences of length 150, multiplicative gradient backpropagation causes gradients to exponentially shrink to zero, leading to severe recency bias (37.16% accuracy).</li>
+            <li><b>LSTM Constant Error Carousel (CEC):</b> LSTM's additive cell state updates (<code>C_t = f_t * C_{t-1} + i_t * C_tilde</code>) preserved long-distance gradients, boosting Macro Precision to <b>70.82%</b> with 100% precision on Business and 98% on Sports.</li>
+        </ol>
+
+        <h2>3. Out-of-Distribution Generalization (2024 Articles)</h2>
+        <p>Evaluated on 50 freshly curated news articles from Reuters, Bloomberg, BBC, TechCrunch, ESPN, and Variety:</p>
+        <ul>
+            <li><b>Logistic Regression:</b> 92.00% Accuracy (Macro F1: 0.9223)</li>
+            <li><b>Linear SVM (Calibrated):</b> 88.00% Accuracy (Macro F1: 0.8850)</li>
+            <li><b>LSTM:</b> 40.00% Accuracy | <b>Simple RNN:</b> 36.00% Accuracy</li>
+        </ul>
+
+        <h2>4. Calibrated Uncertainty Rejection Mechanism</h2>
+        <p>Softmax probabilities are frequently overconfident on out-of-domain text. Linear SVM was calibrated using Platt Scaling (<code>CalibratedClassifierCV</code>), establishing an empirical threshold (<code>T = 0.50</code>):</p>
+        <pre>if max_probability < 0.50:
+    return "Unable to confidently classify this article."</pre>
+        <p><b>Impact on 1,811 Test Articles:</b> Baseline accuracy increased from <b>83.77% to 87.56%</b> across 91.44% of accepted predictions, routing 155 ambiguous articles to editorial review.</p>
+
+        <h2>5. Interactive Streamlit Platform & Verification</h2>
+        <p>The application can be executed locally via:</p>
+        <pre>streamlit run app/app.py</pre>
+        <p>The system features a 25-article test harness (<code>src/test_app_inference.py</code>) running with <b>96.0% benchmark accuracy</b> across all five target categories.</p>
+
+        <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 12px; color: #64748B; text-align: center;">
+            Intelligent News Categorization System • Engineered by Rajesh Tadela • Academic & Industry Portfolio Project
+        </footer>
+    </div>
+</body>
+</html>

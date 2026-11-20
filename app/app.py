@@ -84,6 +84,31 @@ rejection_threshold = st.sidebar.slider(
 )
 
 st.sidebar.markdown("---")
+st.sidebar.subheader("📥 Project Documentation")
+
+report_md_path = "PROJECT_REPORT.md"
+if os.path.exists(report_md_path):
+    with open(report_md_path, "r", encoding="utf-8") as f:
+        st.sidebar.download_button(
+            "📄 Download Report (Markdown)",
+            data=f.read(),
+            file_name="Intelligent_News_Categorization_Report.md",
+            mime="text/markdown",
+            use_container_width=True
+        )
+
+report_html_path = "evaluation/project_report.html"
+if os.path.exists(report_html_path):
+    with open(report_html_path, "r", encoding="utf-8") as f:
+        st.sidebar.download_button(
+            "🖨️ Download Report (Print-Ready HTML)",
+            data=f.read(),
+            file_name="Intelligent_News_Categorization_Report.html",
+            mime="text/html",
+            use_container_width=True
+        )
+
+st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
     <div style="font-size: 12px; color: #64748B;">
@@ -168,6 +193,32 @@ if nav_page == "🏠 Home":
             """
         )
         
+    st.markdown("---")
+    st.subheader("📄 Formal Project Documentation & Downloadable Reports")
+    st.markdown("Download the full comprehensive research and engineering report in your preferred format:")
+    
+    rep_col1, rep_col2 = st.columns(2)
+    with rep_col1:
+        if os.path.exists("PROJECT_REPORT.md"):
+            with open("PROJECT_REPORT.md", "r", encoding="utf-8") as f:
+                st.download_button(
+                    "📥 Download Complete Project Report (Markdown .MD)",
+                    data=f.read(),
+                    file_name="Intelligent_News_Categorization_Report.md",
+                    mime="text/markdown",
+                    use_container_width=True
+                )
+    with rep_col2:
+        if os.path.exists("evaluation/project_report.html"):
+            with open("evaluation/project_report.html", "r", encoding="utf-8") as f:
+                st.download_button(
+                    "🖨️ Download Print-Ready Project Report (HTML / PDF)",
+                    data=f.read(),
+                    file_name="Intelligent_News_Categorization_Report.html",
+                    mime="text/html",
+                    use_container_width=True
+                )
+
     st.markdown("---")
     st.info("💡 **Quick Start:** Switch to the **📰 News Classifier** page in the sidebar to test custom news articles or choose from preset benchmark examples!")
 

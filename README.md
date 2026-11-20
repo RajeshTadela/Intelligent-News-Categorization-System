@@ -17,6 +17,7 @@
 </p>
 
 [🚀 Quick Start](#-quick-start) •
+[📄 Project Report](PROJECT_REPORT.md) •
 [🎯 Supported Categories](#-supported-categories) •
 [📊 Benchmark Results](#-model-comparison--benchmark-results) •
 [🧠 System Architecture](#-system-architecture) •
